@@ -4,20 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Mockery\Exception;
 
 class UserController extends Controller
 {
     public function register(Request $request): JsonResponse
     {
-        Log::info('Register request received', [
-            'request' => $request->all(),
-        ]);
         $fields = $request->validate([
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
@@ -30,7 +27,7 @@ class UserController extends Controller
             'password' => bcrypt($fields['password'])
         ]);
 
-        $token = $user->createToken('myapptoken')->plainTextToken;
+        $token = $user->createToken('token')->plainTextToken;
 
 
         $response = [
@@ -60,7 +57,7 @@ class UserController extends Controller
             ], 401);
         }
 
-        $token = $user->createToken('myapptoken')->plainTextToken;
+        $token = $user->createToken('token')->plainTextToken;
 
         $response = [
             'user' => $user,
@@ -71,12 +68,26 @@ class UserController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        auth()->user()->tokens()->delete();
-
-        return response()->json([
-            'message' => 'Logged out'
-        ]);
+        try{
+            $user = $request->user;
+            $userId = $user->id;
+            $token = DB::table('personal_access_tokens')
+                ->where('tokenable_id', $userId)
+                ->latest()
+                ->first();
+            if ($token) {
+                DB::table('personal_access_tokens')->where('id', $token->id)->delete();
+            }
+            return response()->json([
+                'message' => 'Logged out'
+            ]);
+        } catch (Exception) {
+            return response()->json([
+                'error' => 'Token not provided'
+            ], 400);
+        }
     }
+
 
     public function passwordReset(Request $request): JsonResponse
     {
@@ -122,7 +133,7 @@ class UserController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'Invalid reset token'
+                'message' => 'Invalid reset token or passwords do not match'
             ], 400);
         }
         else{

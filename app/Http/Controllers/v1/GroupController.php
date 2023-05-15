@@ -9,23 +9,21 @@ use App\Models\User;
 use App\Models\GroupUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class GroupController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function __construct()
-    {
-        $this->middleware('auth:sanctum');
-    }
 
     public function index(Request $request): JsonResponse
     {
-        $user = Auth::guard('sanctum')->user();
+        $user = $request->user;
         $groups = $user->inGroups()->get();
-        return response()->json($groups);
+        return response()->json([
+        'groups' => $groups
+    ]);
     }
 
     /**
@@ -44,7 +42,6 @@ class GroupController extends Controller
     {
         $group = Group::create([
             "name" => $request->name,
-            "toPay" => $request->toPay,
             "amountToPayByUser" => 0,
             "date" => $request->date,
             "comment" => $request->comment,
@@ -57,30 +54,35 @@ class GroupController extends Controller
         $amountOfParticipants = $group->getAmountOfParticipants();
         $group->amountToPayByUser = $group->toPay / $amountOfParticipants;
         $group->save();
-
+        Log::info($group);
         return response()->json(['group' => $group], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id): JsonResponse
+    public function show(Request $request): JsonResponse
     {
-        $group = Group::find($id);
-        $participants = $group->participants;
-
-        foreach ($participants as $member) {
-            $groupUser = GroupUser::where('group_id', $group->id)
-                ->where('user_id', $member->id)
-                ->first();
-            $member->paid = $groupUser->paid;
+        $groups = [];
+        $user = $request->user;
+        Log::info('show function called');
+        $fields = $request->validate([
+            'id' => 'required|string',
+        ]);
+        $id = $fields['id'];
+        Log::info($id);
+        $group = $user->inGroups()->where('id', $id)->first();
+        Log::info($group);
+        if($group != null){
+            Log::info("group found");
         }
         $this->updateGroupStatus($group);
         $group->save();
+        $groups[0]=$group;
+        Log::info($groups[0]);
 
         return response()->json([
-            'group' => $group,
-            'participants' => $participants,
+            'groups' => $groups
         ]);
     }
 

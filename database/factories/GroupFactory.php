@@ -22,7 +22,6 @@ class GroupFactory extends Factory
         return [
             //
             'name' => fake()->slug(2),
-            'toPay' => fake()->randomFloat(2, 10, 15),
             'amountToPayByUser' => fake()->randomFloat(2, 1, 10),
             'date' => fake()->dateTimeBetween("2 day", "1 week"),
             'comment' => fake()->paragraph(1),

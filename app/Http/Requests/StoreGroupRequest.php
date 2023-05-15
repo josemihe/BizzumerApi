@@ -27,7 +27,6 @@ class StoreGroupRequest extends FormRequest
         return [
             //
             'name' => 'required',
-            'toPay' => 'required|min:0',
             'date' => 'required|date',
             'comment' => 'max:255'
         ];
@@ -37,8 +36,6 @@ class StoreGroupRequest extends FormRequest
     {
         return [
             'name.required' => 'The :attribute cannot be empty.',
-            'toPay.required' => 'Put the amount of money that was spent ',
-            'toPay.min' => 'The amount spent cannot lower than 0',
             'date' => ':attribute must be a valid date',
             'comment.max' => 'The :attribute cannot be longer than 255 characters',
         ];
@@ -48,7 +45,6 @@ class StoreGroupRequest extends FormRequest
     {
         return [
             'name' => 'name of the group',
-            'toPay' => 'amount spent',
             'comment' => 'put a comment in here',
             'date' => 'date in which the expense was made'
         ];
