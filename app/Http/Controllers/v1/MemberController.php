@@ -6,12 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MemberController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
-        $user = auth()->user();
+        $user = $request->user;
+        Log::info($user);
+        /*$userId = $user->id;
+        Log::info($userId);*/
         $rules = [
             'accessCode' => 'required|string',
         ];
@@ -25,8 +29,8 @@ class MemberController extends Controller
             return response()->json(['error' => 'Failed to join the group'], 404);
         }
 
-        if ((!$group->participants()->where('user_id', $user->id)->exists()) && ($group->status == 0)){
-            $group->participants()->attach($user->id);
+        if ((!$group->participants()->where('user_id', $user)->exists()) && ($group->status == 0)){
+            $group->participants()->attach($user);
             $amountOfParticipants = $group->getAmountOfParticipants();
             $group->amountToPayByUser = $group->toPay / $amountOfParticipants;
             $group->save();

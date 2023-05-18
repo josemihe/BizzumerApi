@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGroupRequest;
 use App\Models\Group;
 use App\Models\User;
-use App\Models\GroupUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class GroupController extends Controller
 {
@@ -27,15 +27,6 @@ class GroupController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): JsonResponse
-    {
-        $users = User::all();
-        return response()->json(compact('users'), 200);
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreGroupRequest $request): JsonResponse
@@ -43,19 +34,17 @@ class GroupController extends Controller
         $group = Group::create([
             "name" => $request->name,
             "amountToPayByUser" => 0,
-            "date" => $request->date,
+            "date" => now(),
             "comment" => $request->comment,
-            "accessCode" => fake()->bothify('?????????'),
-            "ownerId" => $request->user()->id,
+            "accessCode" => Str::random(7),
+            "ownerId" => $request->user->id,
             "status" => 0,
         ]);
 
-        $group->participants()->attach($request->user()->id);
-        $amountOfParticipants = $group->getAmountOfParticipants();
-        $group->amountToPayByUser = $group->toPay / $amountOfParticipants;
+        $group->participants()->attach($request->user->id);
         $group->save();
         Log::info($group);
-        return response()->json(['group' => $group], 201);
+        return response()->json(['message' => 'Group created successfully'], 201);
     }
 
     /**
@@ -65,21 +54,14 @@ class GroupController extends Controller
     {
         $groups = [];
         $user = $request->user;
-        Log::info('show function called');
         $fields = $request->validate([
             'id' => 'required|string',
         ]);
         $id = $fields['id'];
-        Log::info($id);
         $group = $user->inGroups()->where('id', $id)->first();
-        Log::info($group);
-        if($group != null){
-            Log::info("group found");
-        }
         $this->updateGroupStatus($group);
         $group->save();
         $groups[0]=$group;
-        Log::info($groups[0]);
 
         return response()->json([
             'groups' => $groups

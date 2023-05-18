@@ -27,7 +27,6 @@ class StoreGroupRequest extends FormRequest
         return [
             //
             'name' => 'required',
-            'date' => 'required|date',
             'comment' => 'max:255'
         ];
     }
@@ -36,7 +35,6 @@ class StoreGroupRequest extends FormRequest
     {
         return [
             'name.required' => 'The :attribute cannot be empty.',
-            'date' => ':attribute must be a valid date',
             'comment.max' => 'The :attribute cannot be longer than 255 characters',
         ];
     }
@@ -46,7 +44,6 @@ class StoreGroupRequest extends FormRequest
         return [
             'name' => 'name of the group',
             'comment' => 'put a comment in here',
-            'date' => 'date in which the expense was made'
         ];
     }
 }

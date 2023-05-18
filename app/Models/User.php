@@ -48,7 +48,7 @@ class User extends Authenticatable
 
     public function adminGroups(): HasMany
     {
-        return $this->hasMany(Group::class, "owner_id", "id");
+        return $this->hasMany(Group::class, "ownerId", "id");
     }
 
     /**

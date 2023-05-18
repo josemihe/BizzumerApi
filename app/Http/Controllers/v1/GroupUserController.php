@@ -5,16 +5,14 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class GroupUserController extends Controller
 {
     /**
      * GroupUserController constructor.
      */
-    public function __construct()
-    {
-        $this->middleware('auth:sanctum');
-    }
 
     /**
      * Update the specified resource in storage.
@@ -42,35 +40,58 @@ class GroupUserController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     * @param $group_id
-     * @param $user_id
+     * @param Request $request
      * @return JsonResponse
      */
-    public function destroy($group_id, $user_id): JsonResponse
+    public function destroy(Request $request): JsonResponse
     {
-        $user = auth()->user();
-        $group = Group::find($group_id);
-
-        if ($group->groupOwner->id != $user->id) {
+        $user = $request->user;
+        $fields = $request->validate([
+            'group_id' => 'required|string',
+            'delete_id' => 'required|string'
+        ]);
+        $group = Group::find($fields['group_id']);
+        $deleteId = $fields['delete_id'];
+        if ($group->ownerId != $user->id) {
             return response()->json([
                 'message' => 'Only the group owner can remove participants',
             ], 403);
         }
-
-        if ($group->groupOwner->id == $user_id) {
-            $group->delete();
-
+        if($group->ownerId == $deleteId){
             return response()->json([
-                'message' => 'Group successfully deleted',
-            ], 200);
-        } else {
-            $group->participants()->detach($user_id);
-            $amountOfParticipants = $group->getAmountOfParticipants();
-            $group->toPayByUser = $group->toPay / $amountOfParticipants;
+                'message' => 'The admin cannot be deleted'
+            ],403 );
+        }
+        else {
+            $group->participants()->detach($deleteId);
             $group->save();
 
             return response()->json([
                 'message' => 'Participant successfully removed',
+            ], 200);
+        }
+    }
+    public function leaveGroup(Request $request): JsonResponse
+    {
+        $fields = $request->validate([
+            'group_id' => 'required|string',
+        ]);
+        $group = Group::find($fields['group_id']);
+        $userId = $request->user->id;
+
+        if ($group->ownerId != $userId) {
+            $group->participants()->detach($userId);
+            $group->save();
+
+            return response()->json([
+                'message' => 'Group left'
+            ], 200);
+        }
+        else {
+            $group->delete();
+
+            return response()->json([
+                'message' => 'Group deleted'
             ], 200);
         }
     }

@@ -37,5 +37,9 @@ class Group extends Model
     {
         return $this->hasMany(GroupUser::class);
     }
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class);
+    }
 
 }
