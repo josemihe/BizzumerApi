@@ -38,7 +38,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\v1', 'middl
     Route::post('/group/create', [GroupController::class, 'store']);
 
     // GroupUserController endpoints
-    Route::put('/groups/{group_id}/participants/{user_id}', [GroupUserController::class, 'update']);
+    //Route::put('/groups/{group_id}/participants/{user_id}', [GroupUserController::class, 'update']);
     Route::delete('/groups/participant/', [GroupUserController::class, 'destroy']);
     Route::delete('/groups/leave', [GroupUserController::class, 'leaveGroup']);
 });

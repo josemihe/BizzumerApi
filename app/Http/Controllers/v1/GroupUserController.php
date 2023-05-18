@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class GroupUserController extends Controller
 {
@@ -20,7 +19,7 @@ class GroupUserController extends Controller
      * @param  $user_id
      * @return JsonResponse
      */
-    public function update($group_id, $user_id): JsonResponse
+    /*public function update($group_id, $user_id): JsonResponse
     {
         $user = auth()->user();
         $group = Group::find($group_id);
@@ -36,7 +35,7 @@ class GroupUserController extends Controller
         return response()->json([
             'message' => 'Payment status successfully updated',
         ], 200);
-    }
+    }*/
 
     /**
      * Remove the specified resource from storage.
