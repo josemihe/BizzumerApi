@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\v1;
+namespace App\Http\Controllers\v2;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGroupRequest;

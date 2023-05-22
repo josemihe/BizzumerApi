@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\v1;
+namespace App\Http\Controllers\v2;
 
 use App\Http\Controllers\Controller;
 use App\Models\Expense;
@@ -11,34 +11,6 @@ use Illuminate\Support\Facades\Log;
 
 class GroupUserController extends Controller
 {
-    /**
-     * GroupUserController constructor.
-     */
-
-    /**
-     * Update the specified resource in storage.
-     * @param  $group_id
-     * @param  $user_id
-     * @return JsonResponse
-     */
-    /*public function update($group_id, $user_id): JsonResponse
-    {
-        $user = auth()->user();
-        $group = Group::find($group_id);
-
-        if (!$group->participants()->where('user_id', $user->id)->exists()) {
-            return response()->json([
-                'message' => 'User is not a participant of this group',
-            ], 403);
-        }
-
-        $group->participants()->updateExistingPivot($user_id, ['paid' => 1]);
-
-        return response()->json([
-            'message' => 'Payment status successfully updated',
-        ], 200);
-    }*/
-
     /**
      * Remove the specified resource from storage.
      * @param Request $request

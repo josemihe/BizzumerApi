@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\v1\GroupController;
-use App\Http\Controllers\v1\GroupUserController;
+use App\Http\Controllers\v2\GroupController;
+use App\Http\Controllers\v2\GroupUserController;
 use App\Http\Controllers\v2\ExpenseController;
 use App\Http\Controllers\v2\ImageController;
 use App\Http\Controllers\v2\MemberController;
@@ -42,6 +42,13 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\v1', 'middl
     Route::delete('/groups/leave', [GroupUserController::class, 'leaveGroup']);
 });
 Route::group(['prefix' => 'v2', 'namespace' => 'App\Http\Controllers\v2', 'middleware' => ['api_token']], function () {
+    // GroupController endpoints
+    Route::get('/groups', [GroupController::class, 'index']);
+    Route::get('/group', [GroupController::class, 'show']);
+    Route::post('/group/create', [GroupController::class, 'store']);
+    // GroupUserController endpoints
+    Route::delete('/groups/participant/', [GroupUserController::class, 'destroy']);
+    Route::delete('/groups/leave', [GroupUserController::class, 'leaveGroup']);
     // MemberController endpoints
     Route::post('join', [MemberController::class, 'store']);
     Route::post('send-invite', [MemberController::class, 'sendAccessMail']);
