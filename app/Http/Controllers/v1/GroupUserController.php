@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Expense;
 use App\Models\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class GroupUserController extends Controller
 {
@@ -51,6 +53,13 @@ class GroupUserController extends Controller
         ]);
         $group = Group::find($fields['group_id']);
         $deleteId = $fields['delete_id'];
+        $groupId = $fields['group_id'];
+        $userId = $fields['delete_id'];
+
+        $expenses = Expense::where('group_id', $groupId)
+            ->where('user_id', $userId)
+            ->get();
+        Log::info('expense',$expenses->toArray());
         if ($group->ownerId != $user->id) {
             return response()->json([
                 'message' => 'Only the group owner can remove participants',
@@ -62,9 +71,15 @@ class GroupUserController extends Controller
             ],403 );
         }
         else {
-            $group->participants()->detach($deleteId);
-            $group->save();
-
+            if($expenses->isNotEmpty()){
+                return response()->json([
+                    'message' => 'An user with expenses made cannot be deleted'
+                ],403 );
+            }
+            else{
+                $group->participants()->detach($deleteId);
+                $group->save();
+            }
             return response()->json([
                 'message' => 'Participant successfully removed',
             ], 200);

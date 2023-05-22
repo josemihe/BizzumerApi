@@ -12,6 +12,7 @@ class CreateExpensesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('group_id');
+            $table->string('user_name');
             $table->decimal('amount', 10, 2);
             $table->string('description');
             $table->timestamps();

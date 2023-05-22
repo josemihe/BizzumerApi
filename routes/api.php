@@ -4,6 +4,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\v1\GroupController;
 use App\Http\Controllers\v1\GroupUserController;
 use App\Http\Controllers\v2\ExpenseController;
+use App\Http\Controllers\v2\ImageController;
 use App\Http\Controllers\v2\MemberController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,4 +51,8 @@ Route::group(['prefix' => 'v2', 'namespace' => 'App\Http\Controllers\v2', 'middl
     Route::post('group/upload-expense', [ExpenseController::class, 'uploadExpense']);
     Route::get('group/calculate-expenses', [ExpenseController::class, 'calculateExpenses']);
     Route::delete('group/delete-expense', [ExpenseController::class, 'deleteExpense']);
+    //ImageController endpoints
+    Route::get('/expense/view-image', [ImageController::class,'index'])->name('welcome');
+    Route::post('/expense/upload-image', [ImageController::class,'store']);
 });
+

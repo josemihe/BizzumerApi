@@ -5,9 +5,11 @@ namespace App\Http\Controllers\v2;
 use App\Http\Controllers\Controller;
 use App\Models\Expense;
 use App\Models\Group;
+use App\Models\Image;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ExpenseController extends Controller
 {
@@ -35,6 +37,7 @@ class ExpenseController extends Controller
         $expense->amount = $validatedData['amount'];
         $expense->description = $validatedData['description'];
         $expense->user_id = $user->id;
+        $expense->user_name = $user->name;
         $expense->group_id = $group->id;
         $group->expenses()->save($expense);
 
@@ -48,14 +51,12 @@ class ExpenseController extends Controller
         ];
         $validatedData = $request->validate($fields);
         $expenses = Expense::where('group_id', $validatedData['group_id'])->get();
-        Log::info('Expenses:', $expenses->toArray());
         return response()->json(['expenses' => $expenses], 200);
     }
 
 
     public function deleteExpense(Request $request): JsonResponse
     {
-
         $fields = [
             'expense_id' => 'required|integer',
         ];
@@ -65,17 +66,31 @@ class ExpenseController extends Controller
         $expense = Expense::where('id', $validatedData['expense_id'])->first();
         $groupId = $expense->group_id;
         $group = Group::where('id', $groupId)->first();
-        Log::info('Group:', ['group' => $groupId]);
 
         if (!$expense) {
             return response()->json(['error' => 'Expense not found'], 404);
         }
 
-        if($user->id == $expense->user_id || $user->id == $group->ownerId){
+        if ($user->id == $expense->user_id || $user->id == $group->ownerId) {
             $expense->delete();
+
+            // Delete the associated image file
+            $image = Image::where('expense_id',$validatedData['expense_id'])->first();
+            if ($image) {
+                $imagePath = $image->path;
+                Log::info($imagePath);
+                if (Storage::disk('public')->delete($imagePath)) {
+                    $image->delete();
+                }
+                else{
+                    Log::info('file not found');
+                }
+            }
+            else{
+                Log::info('image not found');
+            }
             return response()->json(['message' => 'Expense deleted successfully'], 200);
-        }
-        else{
+        } else {
             return response()->json(['message' => 'You have no permission to delete this expense'], 200);
         }
     }
