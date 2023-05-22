@@ -4,6 +4,7 @@ namespace App\Http\Controllers\v2;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ImageManager;
+use App\Models\Expense;
 use App\Models\Image;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -39,6 +40,17 @@ class ImageController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        Log::info($request->expense_id);
+        $expenseId = $request->expense_id;
+        Log::info($expenseId);
+        $expense = Expense::where('id',$expenseId)->first();
+        $user = $request->user;
+        Log::info($user);
+        if($user->id != $expense['user_id']){
+            return response()->json([
+                'message' => 'only the user who uploaded this expense can modify it'
+            ], 201);
+        }
         if ($file = $request->file('image')) {
             $path = $file->store('images' . '/' . $request->group_id, 'public');
             $relativePath = $path;

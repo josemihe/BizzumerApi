@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('accessCode');
             $table->unsignedBigInteger('ownerId');
             $table->foreign('ownerId')->references('id')->on('users');
-            $table->integer('status');
             $table->timestamps();
         });
     }

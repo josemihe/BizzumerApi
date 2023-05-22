@@ -27,7 +27,6 @@ class GroupFactory extends Factory
             'comment' => fake()->paragraph(1),
             'accessCode' => fake()->bothify('?????????'),
             'ownerId' => $this->faker->randomElement(DB::table('users')->pluck('id')),
-            'status' => 0,
         ];
     }
 }

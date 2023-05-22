@@ -13,7 +13,7 @@ class GroupUser extends Model
     protected $primaryKey = null;
     public $incrementing = false;
     protected $fillable = [
-        'group_id', 'user_id', 'created_at', 'updated_at', 'paid'
+        'group_id', 'user_id', 'created_at', 'updated_at'
     ];
 
     public function inGroup(): BelongsTo

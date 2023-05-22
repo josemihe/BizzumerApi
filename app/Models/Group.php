@@ -12,7 +12,7 @@ class Group extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name', 'amountToPayByUser', 'date', 'comment', 'accessCode', 'ownerId', 'status'
+        'name', 'amountToPayByUser', 'date', 'comment', 'accessCode', 'ownerId'
     ];
 
     public function groupOwner(): BelongsTo

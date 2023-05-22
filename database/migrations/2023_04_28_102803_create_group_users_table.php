@@ -15,7 +15,6 @@ return new class extends Migration
             $table->unsignedBigInteger("group_id");
             $table->foreign('group_id')->references('id')->on('groups')->onUpdate("cascade")->onDelete("cascade");
             $table->unsignedBigInteger("user_id");
-            $table->boolean("paid")->default(false);
             $table->timestamps();
         });
     }
