@@ -34,8 +34,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\v1', 'middl
     // GroupController endpoints
     Route::get('/groups', [GroupController::class, 'index']);
     Route::get('/group', [GroupController::class, 'show']);
-    Route::get('/groups/edit/{id}', [GroupController::class, 'edit']);
-    Route::put('/groups/{id}', [GroupController::class, 'update']);
     Route::post('/group/create', [GroupController::class, 'store']);
 
     // GroupUserController endpoints
