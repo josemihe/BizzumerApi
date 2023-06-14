@@ -5,7 +5,6 @@ namespace App\Http\Controllers\v2;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGroupRequest;
 use App\Models\Group;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -13,10 +12,6 @@ use Illuminate\Support\Str;
 
 class GroupController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-
     public function index(Request $request): JsonResponse
     {
         $user = $request->user;
@@ -25,10 +20,6 @@ class GroupController extends Controller
         'groups' => $groups
     ]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreGroupRequest $request): JsonResponse
     {
         $group = Group::create([
@@ -38,18 +29,12 @@ class GroupController extends Controller
             "comment" => $request->comment,
             "accessCode" => Str::random(7),
             "ownerId" => $request->user->id,
-            "status" => 0,
         ]);
-
+        Log::info("Failed");
         $group->participants()->attach($request->user->id);
         $group->save();
-        Log::info($group);
         return response()->json(['message' => 'Group created successfully'], 201);
     }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(Request $request): JsonResponse
     {
         $groups = [];

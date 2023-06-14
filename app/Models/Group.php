@@ -17,7 +17,7 @@ class Group extends Model
 
     public function groupOwner(): BelongsTo
     {
-        return $this->belongsTo(User::class, "ownerId", "id");
+        return $this->belongsTo(User::class, 'ownerId', 'id');
     }
 
     /**
@@ -25,7 +25,7 @@ class Group extends Model
      */
     public function participants(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, "group_user", "group_id", "user_id")->withPivot('user_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'group_user', 'group_id', 'user_id')->withPivot('user_id')->withTimestamps();
     }
 
 
@@ -35,11 +35,15 @@ class Group extends Model
     }
     public function groupUser(): HasMany
     {
-        return $this->hasMany(GroupUser::class);
+        return $this->hasMany(GroupUser::class, 'group_id', 'id');
     }
     public function expenses(): HasMany
     {
-        return $this->hasMany(Expense::class);
+        return $this->hasMany(Expense::class, 'group_id', 'id');
+    }
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class, 'group_id', 'id');
     }
 
 }

@@ -48,7 +48,7 @@ class User extends Authenticatable
 
     public function adminGroups(): HasMany
     {
-        return $this->hasMany(Group::class, "ownerId", "id");
+        return $this->hasMany(Group::class, 'ownerId', 'id');
     }
 
     /**
@@ -56,6 +56,11 @@ class User extends Authenticatable
      */
     public function inGroups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, "group_user", "user_id", "group_id")->withTimestamps();
+        return $this->belongsToMany(Group::class, 'group_user', 'user_id', 'group_id')->withTimestamps();
+    }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class, 'user_id','id');
     }
 }

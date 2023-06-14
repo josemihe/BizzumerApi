@@ -78,16 +78,9 @@ class ExpenseController extends Controller
             $image = Image::where('expense_id',$validatedData['expense_id'])->first();
             if ($image) {
                 $imagePath = $image->path;
-                Log::info($imagePath);
                 if (Storage::disk('public')->delete($imagePath)) {
                     $image->delete();
                 }
-                else{
-                    Log::info('file not found');
-                }
-            }
-            else{
-                Log::info('image not found');
             }
             return response()->json(['message' => 'Expense deleted successfully'], 200);
         } else {
@@ -111,6 +104,7 @@ class ExpenseController extends Controller
         $owesMoney = [];
         $owedMoney = [];
         $transactions = [];
+        $user = $request->user;
 
         // Calculate the total amount paid and owed by each participant
         foreach ($participants as $participant) {
@@ -124,6 +118,7 @@ class ExpenseController extends Controller
                 'paid' => $paid,
                 'receives' => $receives,
                 'owes' => $owes,
+                'status' => 0
             ];
 
             if ($receives > 0) {
@@ -138,7 +133,6 @@ class ExpenseController extends Controller
 
         foreach ($owesMoney as $pays => $amountOwed) {
             foreach ($owedMoney as $receiver => $amountOwedTo) {
-                // if the debtor owes more than the creditor is owed, settle the debt
                 if ($amountOwed >= $amountOwedTo) {
                     $balances[$pays]['owes'] -= $amountOwedTo;
                     $balances[$receiver]['receives'] -= $amountOwedTo;
@@ -146,6 +140,7 @@ class ExpenseController extends Controller
                         'from' => $pays,
                         'to' => $receiver,
                         'amount' => $amountOwedTo,
+                        'status' => 0
                     ];
                     unset($owesMoney[$pays]);
                     unset($owedMoney[$receiver]);
@@ -156,7 +151,6 @@ class ExpenseController extends Controller
                         $amountOwed -= $amountOwedTo;
                     }
                 }
-                // otherwise, the debtor owes less than the creditor is owed, so partially settle the debt
                 else {
                     $balances[$pays]['owes'] -= $amountOwed;
                     $balances[$receiver]['receives'] -= $amountOwed;
@@ -172,10 +166,14 @@ class ExpenseController extends Controller
             }
         }
         if (empty($transactions)) {
-            return response()->json([$transactions]);
+            return response()->json([
+                    'transactions' => $transactions,
+                    'user' => $user
+                ]);
         }
         return response()->json([
             'transactions' => $transactions,
+            'user' => $user
         ]);
     }
 }

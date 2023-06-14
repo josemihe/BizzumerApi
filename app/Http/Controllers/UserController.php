@@ -112,7 +112,7 @@ class UserController extends Controller
             });
 
             return response()->json([
-                'message' => 'A password reset link has been sent to your email address.'
+                'message' => 'A password reset token has been sent to your email address.'
             ]);
         } catch (\Exception $e) {
             return response()->json([

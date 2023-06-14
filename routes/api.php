@@ -30,7 +30,7 @@ Route::put('/password-update', [UserController::class, 'passwordUpdate']);
 Route::group(['middleware'=>['api_token']], function() {
     Route::delete('/logout', [UserController::class, 'logout']);
 });
-Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\v1', 'middleware' => ['api_token']], function () {
+/*Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\v1', 'middleware' => ['api_token']], function () {
     // GroupController endpoints
     Route::get('/groups', [GroupController::class, 'index']);
     Route::get('/group', [GroupController::class, 'show']);
@@ -40,7 +40,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\v1', 'middl
     //Route::put('/groups/{group_id}/participants/{user_id}', [GroupUserController::class, 'update']);
     Route::delete('/groups/participant/', [GroupUserController::class, 'destroy']);
     Route::delete('/groups/leave', [GroupUserController::class, 'leaveGroup']);
-});
+});*/
 Route::group(['prefix' => 'v2', 'namespace' => 'App\Http\Controllers\v2', 'middleware' => ['api_token']], function () {
     // GroupController endpoints
     Route::get('/groups', [GroupController::class, 'index']);

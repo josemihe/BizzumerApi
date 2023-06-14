@@ -31,7 +31,6 @@ class GroupUserController extends Controller
         $expenses = Expense::where('group_id', $groupId)
             ->where('user_id', $userId)
             ->get();
-        Log::info('expense',$expenses->toArray());
         if ($group->ownerId != $user->id) {
             return response()->json([
                 'message' => 'Only the group owner can remove participants',
@@ -49,6 +48,7 @@ class GroupUserController extends Controller
                 ],403 );
             }
             else{
+
                 $group->participants()->detach($deleteId);
                 $group->save();
             }
@@ -64,14 +64,23 @@ class GroupUserController extends Controller
         ]);
         $group = Group::find($fields['group_id']);
         $userId = $request->user->id;
-
+        $expenses = Expense::where('group_id', $group)
+            ->where('user_id', $userId)
+            ->get();
         if ($group->ownerId != $userId) {
-            $group->participants()->detach($userId);
-            $group->save();
+            if($expenses->isNotEmpty()){
+                return response()->json([
+                    'message' => 'An user with expenses made cannot be removed'
+                ],403 );
+            }
+            else{
+                $group->participants()->detach($userId);
+                $group->save();
 
-            return response()->json([
-                'message' => 'Group left'
-            ], 200);
+                return response()->json([
+                    'message' => 'Group left'
+                ], 200);
+            }
         }
         else {
             $group->delete();

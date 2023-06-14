@@ -18,17 +18,17 @@ class GroupUser extends Model
 
     public function inGroup(): BelongsTo
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsTo(Group::class, 'group_id', 'id');
     }
 
     public function isUser(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id','id');
     }
 
     public function isMember(): BelongsTo
     {
-        return $this->belongsTo(User::class, "user_id", "id");
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }
 
